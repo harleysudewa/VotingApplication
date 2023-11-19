@@ -23,23 +23,35 @@ public class LoginActivity extends AppCompatActivity {
         editTextUsername = findViewById(R.id.editTextUsername);
         editTextPassword = findViewById(R.id.editTextPassword);
         buttonLogin = findViewById(R.id.buttonLogin);
+        DataHelper dbHandler = new DataHelper(this, DataHelper.DATABASE_NAME, null, DataHelper.DATABASE_VERSION);
 
-        buttonLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String username = editTextUsername.getText().toString();
-                String password = editTextPassword.getText().toString();
+        buttonLogin.setOnClickListener(view -> {
+            if(editTextPassword.getText().toString().equals("admin")){
+                if (dbHandler.getVote(editTextUsername.getText().toString()) == null){
 
-                if (username.equals("username") && password.equals("password")) {
-                    // Gantilah "username" dan "password" dengan data login yang sesungguhnya
-                    // Jika login berhasil
-                    Toast.makeText(LoginActivity.this, "Login berhasil!", Toast.LENGTH_SHORT).show();
-                    Intent inte = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(inte);
+                    Toast.makeText(this,
+                            "Login Berhasil!",
+                            Toast.LENGTH_SHORT).show();
+                    Intent myIntent = new Intent(this, VotingActivity.class);
+                    myIntent.putExtra("name", editTextUsername.getText().toString());
+                    editTextUsername.setText("");
+                    editTextPassword.setText("");
+                    startActivity(myIntent);
                 } else {
-                    // Jika login gagal
-                    Toast.makeText(LoginActivity.this, "Login gagal. Coba lagi.", Toast.LENGTH_SHORT).show();
+                    editTextUsername.setText("");
+                    editTextPassword.setText("");
+                    Toast.makeText(this,
+                            "Anda telah memilih kandidat, mengarahkan ke layar daftar voting.",
+                            Toast.LENGTH_SHORT).show();
+                    Intent myIntent = new Intent(this, MainActivity.class);
+                    myIntent.putExtra("name", editTextUsername.getText().toString());
+                    startActivity(myIntent);
                 }
+
+            } else {
+                editTextUsername.setText("");
+                editTextPassword.setText("");
+                Toast.makeText(this, "Login Gagal, Username atau password salah!", Toast.LENGTH_SHORT).show();
             }
         });
     }

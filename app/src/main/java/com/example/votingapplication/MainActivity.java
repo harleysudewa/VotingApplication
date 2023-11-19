@@ -1,46 +1,36 @@
 package com.example.votingapplication;
 
-import android.app.Activity;
-import android.content.ContentValues;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.ImageButton;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
-    private Button buttonVote;
-    private ListView listViewResults;
-    private ArrayList<String> resultList;
-    private ArrayAdapter<String> resultAdapter;
-    private DataHelper dbHelper;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        buttonVote = findViewById(R.id.buttonVote);
-        listViewResults = findViewById(R.id.listViewResults);
-        resultList = new ArrayList<>();
-        resultAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, resultList);
-        dbHelper = new DataHelper(this);
+        DataHelper dbHandler = new DataHelper(this, DataHelper.DATABASE_NAME, null, DataHelper.DATABASE_VERSION);
 
-        listViewResults.setAdapter(resultAdapter);
+        ArrayList<Vote> votes = new ArrayList<Vote>();
+        votes.add(new Vote("Orang Utan", dbHandler.getVoteAmount(1)));
+        votes.add(new Vote("Hillary", dbHandler.getVoteAmount(2)));
+        votes.add(new Vote("Peter", dbHandler.getVoteAmount(3)));
+        votes.add(new Vote("Alex", dbHandler.getVoteAmount(4)));
 
-        buttonVote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent inte = new Intent(MainActivity.this, VotingActivity.class);
-                startActivity(inte);
-            }
+        RecyclerView recyclerView = findViewById(R.id.rv_vote_list);
+        CustomRecyclerAdapter recyclerViewAdapter = new CustomRecyclerAdapter(votes);
+        recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        ImageButton btnBack = findViewById(R.id.btn_back);
+        btnBack.setOnClickListener(view -> {
+            finish();
         });
     }
 }
